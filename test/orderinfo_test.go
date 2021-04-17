@@ -88,7 +88,7 @@ func addImage(client pb.OrderInfoServiceClient) {
 	}
 
 	for {
-		chunk := make([]byte, 1024)
+		chunk := make([]byte, 10*1024)
 		chunkSize, err := imgFile.Read(chunk)
 		if err == io.EOF {
 			break

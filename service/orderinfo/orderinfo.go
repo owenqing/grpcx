@@ -3,6 +3,7 @@ package orderinfo
 import (
 	"io"
 	"log"
+	"strconv"
 	"time"
 
 	pb "github.com/owenqing/grpcx/pb/orderinfo"
@@ -49,7 +50,8 @@ func (s *OrderInfoService) AddImage(stream pb.OrderInfoService_AddImageServer) e
 	// metadata 是一个 map
 	md, ok := metadata.FromIncomingContext(stream.Context())
 	if ok {
-		log.Printf("AddImage metatada: %#v\n", md["order_id"])
+		orderId, _ := strconv.Atoi(md["order_id"][0])
+		log.Printf("AddImage metatada: %#v\n", orderId)
 	}
 	img := []byte{}
 	for {
