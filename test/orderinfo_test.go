@@ -4,7 +4,7 @@ import (
 	"log"
 	"testing"
 
-	pb "gitee.com/owenqing/grpcx/pb/orderinfo"
+	pb "github.com/owenqing/grpcx/pb/orderinfo"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"

@@ -1,7 +1,7 @@
 package orderinfo
 
 import (
-	pb "gitee.com/owenqing/grpcx/pb/orderinfo"
+	pb "github.com/owenqing/grpcx/pb/orderinfo"
 
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"

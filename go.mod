@@ -1,4 +1,4 @@
-module gitee.com/owenqing/grpcx
+module github.com/owenqing/grpcx
 
 go 1.16
 

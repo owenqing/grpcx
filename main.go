@@ -4,8 +4,8 @@ import (
 	"log"
 	"net"
 
-	pb "gitee.com/owenqing/grpcx/pb/orderinfo"
-	service "gitee.com/owenqing/grpcx/service/orderinfo"
+	pb "github.com/owenqing/grpcx/pb/orderinfo"
+	service "github.com/owenqing/grpcx/service/orderinfo"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
