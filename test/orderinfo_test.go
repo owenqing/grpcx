@@ -1,6 +1,7 @@
 package test
 
 import (
+	"io"
 	"log"
 	"testing"
 
@@ -12,8 +13,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestGetOrderInfo(t *testing.T) {
-
+// 客户端 => Server
+func TestClient(t *testing.T) {
 	// 客户端证书
 	creds, err := credentials.NewClientTLSFromFile("../cert/cert.pem", "")
 	if err != nil {
@@ -28,9 +29,15 @@ func TestGetOrderInfo(t *testing.T) {
 		log.Fatal(err.Error())
 	}
 	defer conn.Close()
-
 	// rpc 调用
 	client := pb.NewOrderInfoServiceClient(conn)
+	// test
+	GetOrderInfo(client)
+	GetAll(client)
+}
+
+// 获取订单信息
+func GetOrderInfo(client pb.OrderInfoServiceClient) {
 	response, err := client.GetOrderInfo(context.Background(), &pb.OrderInfoReq{OrderId: proto.Int64(1)})
 	if err != nil {
 		log.Fatal(err.Error())
@@ -39,4 +46,23 @@ func TestGetOrderInfo(t *testing.T) {
 	log.Printf("response: price[%v]\n", response.GetPrice())
 	log.Printf("response: desc[%v]\n", response.GetDesc())
 	log.Printf("response: user_id[%v]\n", response.GetUserId())
+}
+
+// 获取所有订单信息
+func GetAll(client pb.OrderInfoServiceClient) {
+	stream, err := client.GetAll(context.Background(), &pb.GetAllReq{})
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	for {
+		response, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		log.Printf("res => %#v\n", response.GetDesc())
+	}
+
 }

@@ -12,7 +12,7 @@ build:
 
 run: 
 	@echo "start to run project..."
-	@go run ./cmd/main.go
+	@go run ./main.go
 
 ssl: 
 	@echo "gen ssl..."

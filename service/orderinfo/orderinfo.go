@@ -1,6 +1,8 @@
 package orderinfo
 
 import (
+	"time"
+
 	pb "github.com/owenqing/grpcx/pb/orderinfo"
 
 	"github.com/golang/protobuf/proto"
@@ -20,4 +22,20 @@ func (s *OrderInfoService) GetOrderInfo(ctx context.Context, request *pb.OrderIn
 		UserId:  proto.Int64(2),
 	}
 	return response, nil
+}
+
+// 获取全部订单信息
+// 服务端流模式
+func (s *OrderInfoService) GetAll(request *pb.GetAllReq, stream pb.OrderInfoService_GetAllServer) error {
+	var order = []*pb.OrderInfoRsp{
+		&pb.OrderInfoRsp{OrderId: proto.Int64(1), Price: proto.String("2$"), Desc: proto.String("蔬菜"), UserId: proto.Int64(1000)},
+		&pb.OrderInfoRsp{OrderId: proto.Int64(2), Price: proto.String("18$"), Desc: proto.String("水果"), UserId: proto.Int64(1009)},
+		&pb.OrderInfoRsp{OrderId: proto.Int64(3), Price: proto.String("16$"), Desc: proto.String("肉类"), UserId: proto.Int64(1009)},
+	}
+	for _, orderItem := range order {
+		// 流模式 send
+		stream.Send(orderItem)
+		time.Sleep(2 * time.Second)
+	}
+	return nil
 }

@@ -12,6 +12,12 @@ message OrderInfoRsp {
     required int64 user_id = 4;
 }
 
+// 订单
+message GetAllReq{}
+
+
 service OrderInfoService {
     rpc GetOrderInfo(OrderInfoReq) returns (OrderInfoRsp);
+    // 服务端流模式
+    rpc GetAll(GetAllReq) returns (stream OrderInfoRsp);
 }
