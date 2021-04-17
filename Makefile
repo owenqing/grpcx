@@ -6,7 +6,7 @@ update:
 
 build:
 	@echo "start to build project..."
-	@go build -o ./bin/run ./main.go
+	@go build -o ./bin/grpcx ./main.go
 	@echo "end build"
 
 
