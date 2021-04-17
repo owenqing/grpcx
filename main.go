@@ -19,13 +19,12 @@ func main() {
 		log.Fatalln(err.Error())
 	}
 	// ssl 证书
-	creds, err := credentials.NewServerTLSFromFile("./cert.pem", "./key.pem")
+	creds, err := credentials.NewServerTLSFromFile("./cert/cert.pem", "./cert/key.pem")
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
 	options := []grpc.ServerOption{grpc.Creds(creds)}
 	server := grpc.NewServer(options...)
-	// server := grpc.NewServer()
 	// rpc 服务注册
 	pb.RegisterOrderInfoServiceServer(server, new(service.OrderInfoService))
 	log.Printf("GRPC SERVER STARTED %s\n", port)

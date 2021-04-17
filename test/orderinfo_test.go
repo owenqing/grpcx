@@ -15,7 +15,7 @@ import (
 func TestGetOrderInfo(t *testing.T) {
 
 	// 客户端证书
-	creds, err := credentials.NewClientTLSFromFile("../cert.pem", "")
+	creds, err := credentials.NewClientTLSFromFile("../cert/cert.pem", "")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
