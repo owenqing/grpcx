@@ -1,0 +1,33 @@
+package main
+
+import (
+	"log"
+	"net"
+
+	pb "gitee.com/owenqing/grpcx/pb/orderinfo"
+	service "gitee.com/owenqing/grpcx/service/orderinfo"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+)
+
+const port = ":9000"
+
+func main() {
+	listen, err := net.Listen("tcp", port)
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	// ssl 证书
+	creds, err := credentials.NewServerTLSFromFile("./cert.pem", "./key.pem")
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
+	options := []grpc.ServerOption{grpc.Creds(creds)}
+	server := grpc.NewServer(options...)
+	// server := grpc.NewServer()
+	// rpc 服务注册
+	pb.RegisterOrderInfoServiceServer(server, new(service.OrderInfoService))
+	log.Printf("GRPC SERVER STARTED %s\n", port)
+	server.Serve(listen)
+}

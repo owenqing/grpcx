@@ -1,0 +1,17 @@
+syntax = "proto2";
+option go_package = "./orderinfo";
+
+message OrderInfoReq {
+    required int64 order_id = 1;
+}
+
+message OrderInfoRsp {
+    required int64 order_id = 1;
+    required string price = 2;
+    required string desc = 3;
+    required int64 user_id = 4;
+}
+
+service OrderInfoService {
+    rpc GetOrderInfo(OrderInfoReq) returns (OrderInfoRsp);
+}

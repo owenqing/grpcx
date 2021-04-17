@@ -1,0 +1,1 @@
+export GODEBUG=x509ignoreCN=0
