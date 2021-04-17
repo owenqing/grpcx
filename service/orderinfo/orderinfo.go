@@ -1,9 +1,12 @@
 package orderinfo
 
 import (
+	"io"
+	"log"
 	"time"
 
 	pb "github.com/owenqing/grpcx/pb/orderinfo"
+	"google.golang.org/grpc/metadata"
 
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
@@ -38,4 +41,29 @@ func (s *OrderInfoService) GetAll(request *pb.GetAllReq, stream pb.OrderInfoServ
 		time.Sleep(2 * time.Second)
 	}
 	return nil
+}
+
+// 订单图片上传
+func (s *OrderInfoService) AddImage(stream pb.OrderInfoService_AddImageServer) error {
+	// 订单 id 从 metadata 中取出
+	// metadata 是一个 map
+	md, ok := metadata.FromIncomingContext(stream.Context())
+	if ok {
+		log.Printf("AddImage metatada: %#v\n", md["order_id"])
+	}
+	img := []byte{}
+	for {
+		data, err := stream.Recv()
+		if err == io.EOF {
+			log.Printf("Image Size: %#v\n", len(img))
+			// 上传完毕给客户端发送请求
+			return stream.SendAndClose(&pb.AddImageRsp{Result: proto.Bool(true)})
+		}
+		if err != nil {
+			// 这个 err 会被序列化直接传给客户端
+			return err
+		}
+		log.Printf("received size: %d\n", len(data.Data))
+		img = append(img, data.Data...)
+	}
 }

@@ -1,6 +1,7 @@
 syntax = "proto2";
 option go_package = "./orderinfo";
 
+// 获取订单信息
 message OrderInfoReq {
     required int64 order_id = 1;
 }
@@ -12,12 +13,22 @@ message OrderInfoRsp {
     required int64 user_id = 4;
 }
 
-// 订单
+// 获取所有订单
 message GetAllReq{}
 
+// 上传图片 order_id 不在请求中写，写在 metadata
+message AddImageReq {
+    required bytes data = 1;
+}
+
+message AddImageRsp {
+    required bool result = 1;
+}
 
 service OrderInfoService {
     rpc GetOrderInfo(OrderInfoReq) returns (OrderInfoRsp);
     // 服务端流模式
     rpc GetAll(GetAllReq) returns (stream OrderInfoRsp);
+    // 图片上传,客户端流
+    rpc AddImage(stream AddImageReq) returns (AddImageRsp);
 }

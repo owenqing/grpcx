@@ -3,6 +3,7 @@ package test
 import (
 	"io"
 	"log"
+	"os"
 	"testing"
 
 	pb "github.com/owenqing/grpcx/pb/orderinfo"
@@ -10,6 +11,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -32,12 +34,13 @@ func TestClient(t *testing.T) {
 	// rpc 调用
 	client := pb.NewOrderInfoServiceClient(conn)
 	// test
-	GetOrderInfo(client)
-	GetAll(client)
+	// getOrderInfo(client)
+	// getAll(client)
+	addImage(client)
 }
 
 // 获取订单信息
-func GetOrderInfo(client pb.OrderInfoServiceClient) {
+func getOrderInfo(client pb.OrderInfoServiceClient) {
 	response, err := client.GetOrderInfo(context.Background(), &pb.OrderInfoReq{OrderId: proto.Int64(1)})
 	if err != nil {
 		log.Fatal(err.Error())
@@ -49,7 +52,7 @@ func GetOrderInfo(client pb.OrderInfoServiceClient) {
 }
 
 // 获取所有订单信息
-func GetAll(client pb.OrderInfoServiceClient) {
+func getAll(client pb.OrderInfoServiceClient) {
 	stream, err := client.GetAll(context.Background(), &pb.GetAllReq{})
 	if err != nil {
 		log.Fatal(err.Error())
@@ -65,4 +68,43 @@ func GetAll(client pb.OrderInfoServiceClient) {
 		log.Printf("res => %#v\n", response.GetDesc())
 	}
 
+}
+
+func addImage(client pb.OrderInfoServiceClient) {
+	imgFile, err := os.Open("Mars.jpg")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer imgFile.Close()
+	// metadata 传递 order_id
+	md := metadata.New(map[string]string{
+		"order_id": "2021",
+	})
+	ctx := context.Background()
+	ctx = metadata.NewOutgoingContext(ctx, md)
+	stream, err := client.AddImage(ctx)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	for {
+		chunk := make([]byte, 1024)
+		chunkSize, err := imgFile.Read(chunk)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		if chunkSize < len(chunk) {
+			chunk = chunk[:chunkSize]
+		}
+		stream.Send(&pb.AddImageReq{Data: chunk})
+	}
+	// 通知服务端数据已发完
+	res, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	log.Printf("AddImage Response: %#v\n", res.Result)
 }
