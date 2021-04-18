@@ -69,3 +69,24 @@ func (s *OrderInfoService) AddImage(stream pb.OrderInfoService_AddImageServer) e
 		img = append(img, data.Data...)
 	}
 }
+
+func (s *OrderInfoService) AddBatchUsers(stream pb.OrderInfoService_AddBatchUsersServer) error {
+	var usersRet []*pb.User
+	for {
+		user, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		usersRet = append(usersRet, user)
+		// 处理一个数据就返回 user_id
+		stream.Send(&pb.AddBatchUsersRsp{UserId: user.UserId})
+	}
+	// 输出服务端收到的 users
+	for _, u := range usersRet {
+		log.Printf("user => %+v\n", u)
+	}
+	return nil
+}

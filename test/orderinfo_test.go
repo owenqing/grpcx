@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	pb "github.com/owenqing/grpcx/pb/orderinfo"
 
@@ -36,7 +37,8 @@ func TestClient(t *testing.T) {
 	// test
 	// getOrderInfo(client)
 	// getAll(client)
-	addImage(client)
+	// addImage(client)
+	AddBatchUsers(client)
 }
 
 // 获取订单信息
@@ -107,4 +109,43 @@ func addImage(client pb.OrderInfoServiceClient) {
 		log.Fatal(err.Error())
 	}
 	log.Printf("AddImage Response: %#v\n", res.Result)
+}
+
+// 双向流批量上传 user 信息
+// 服务端每处理一个请求就返回一个 user_id
+func AddBatchUsers(client pb.OrderInfoServiceClient) {
+	var users = []*pb.User{
+		&pb.User{UserId: proto.Int64(1), Name: proto.String("Tom"), OrderNum: proto.Int32(10), ConsumptionAmount: proto.Int32(1000)},
+		&pb.User{UserId: proto.Int64(2), Name: proto.String("Jack"), OrderNum: proto.Int32(9), ConsumptionAmount: proto.Int32(899)},
+		&pb.User{UserId: proto.Int64(3), Name: proto.String("Bob"), OrderNum: proto.Int32(6), ConsumptionAmount: proto.Int32(998)},
+	}
+	stream, err := client.AddBatchUsers(context.Background())
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	// goruntine 去处理服务端返回的结果
+	finishSignal := make(chan struct{}, 1)
+	go func() {
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				finishSignal <- struct{}{}
+				break
+			}
+			if err != nil {
+				log.Fatal(err.Error())
+			}
+			log.Printf("user rsp => %#v\n", res.GetUserId())
+		}
+	}()
+
+	for _, u := range users {
+		err = stream.Send(u)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		time.Sleep(500 * time.Millisecond)
+	}
+	stream.CloseSend()
+	<-finishSignal
 }
