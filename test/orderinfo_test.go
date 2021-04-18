@@ -35,9 +35,9 @@ func TestClient(t *testing.T) {
 	// rpc 调用
 	client := pb.NewOrderInfoServiceClient(conn)
 	// test
-	// getOrderInfo(client)
-	// getAll(client)
-	// addImage(client)
+	getOrderInfo(client)
+	getAll(client)
+	addImage(client)
 	AddBatchUsers(client)
 }
 
@@ -108,7 +108,7 @@ func addImage(client pb.OrderInfoServiceClient) {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	log.Printf("AddImage Response: %#v\n", res.Result)
+	log.Printf("AddImage Response: %#v\n", res.GetResult())
 }
 
 // 双向流批量上传 user 信息

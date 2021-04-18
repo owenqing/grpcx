@@ -20,29 +20,30 @@ message GetAllReq{}
 message AddImageReq {
     required bytes data = 1;
 }
+
 message AddImageRsp {
     required bool result = 1;
 }
 
-// 
+// stream 上传 user 信息 
 message User {
     required int64 user_id = 1;
     required string name = 2;
     required int32 order_num = 3;
     required int32 consumption_amount = 4;
 }
-
+// stream 返回上传结果
 message AddBatchUsersRsp {
     required int64 user_id = 1;
 }
 
-
 service OrderInfoService {
+    // 一元模式
     rpc GetOrderInfo(OrderInfoReq) returns (OrderInfoRsp);
     // 服务端流模式
     rpc GetAll(GetAllReq) returns (stream OrderInfoRsp);
-    // 图片上传,客户端流
+    // 客户端流
     rpc AddImage(stream AddImageReq) returns (AddImageRsp);
-    // 批量上传客户信息
+    // 双向流
     rpc AddBatchUsers(stream User) returns (stream AddBatchUsersRsp);
 }
