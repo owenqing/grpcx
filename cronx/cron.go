@@ -1,6 +1,15 @@
 package cronx
 
-import "github.com/robfig/cron"
+import (
+	"sync"
+
+	"github.com/robfig/cron"
+)
+
+var (
+	cronSync         sync.Once
+	cronTaskInstance *CronTasks
+)
 
 // 定时任务单元
 type cronitem struct {
@@ -15,7 +24,7 @@ type CronTasks struct {
 
 type CronTasksInterface interface {
 	// 新增定时任务
-	AddTask(taskkey, cronexpr string, f func())
+	RegisteTask(taskkey, cronexpr string, f func())
 	// 启动
 	RunAll()
 	// 停止

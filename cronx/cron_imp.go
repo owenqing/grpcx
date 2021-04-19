@@ -6,12 +6,13 @@ import (
 
 // 创建定时任务
 func NewCronTasks() *CronTasks {
-	return &CronTasks{
-		tasks: make(map[string]*cronitem),
-	}
+	cronSync.Do(func() {
+		cronTaskInstance = &CronTasks{tasks: make(map[string]*cronitem)}
+	})
+	return cronTaskInstance
 }
 
-func (c *CronTasks) AddTask(taskkey, cronexpr string, f func()) {
+func (c *CronTasks) RegisteTask(taskkey, cronexpr string, f func()) {
 	cronitem := &cronitem{expr: cronexpr, fn: f, cronjob: cron.New()}
 	cronitem.cronjob.AddFunc(cronitem.expr, cronitem.fn)
 	c.tasks[taskkey] = cronitem
