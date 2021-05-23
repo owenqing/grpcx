@@ -32,9 +32,9 @@ func (s *OrderInfoService) GetOrderInfo(ctx context.Context, request *pb.OrderIn
 // 服务端流模式
 func (s *OrderInfoService) GetAll(request *pb.GetAllReq, stream pb.OrderInfoService_GetAllServer) error {
 	var order = []*pb.OrderInfoRsp{
-		&pb.OrderInfoRsp{OrderId: proto.Int64(1), Price: proto.String("2$"), Desc: proto.String("蔬菜"), UserId: proto.Int64(1000)},
-		&pb.OrderInfoRsp{OrderId: proto.Int64(2), Price: proto.String("18$"), Desc: proto.String("水果"), UserId: proto.Int64(1009)},
-		&pb.OrderInfoRsp{OrderId: proto.Int64(3), Price: proto.String("16$"), Desc: proto.String("肉类"), UserId: proto.Int64(1009)},
+		{OrderId: proto.Int64(1), Price: proto.String("2$"), Desc: proto.String("蔬菜"), UserId: proto.Int64(1000)},
+		{OrderId: proto.Int64(2), Price: proto.String("18$"), Desc: proto.String("水果"), UserId: proto.Int64(1009)},
+		{OrderId: proto.Int64(3), Price: proto.String("16$"), Desc: proto.String("肉类"), UserId: proto.Int64(1009)},
 	}
 	for _, orderItem := range order {
 		// 流模式 send

@@ -36,9 +36,9 @@ func TestClient(t *testing.T) {
 	client := pb.NewOrderInfoServiceClient(conn)
 	// test
 	getOrderInfo(client)
-	getAll(client)
-	addImage(client)
-	AddBatchUsers(client)
+	// getAll(client)
+	// addImage(client)
+	// AddBatchUsers(client)
 }
 
 // 获取订单信息
@@ -115,9 +115,9 @@ func addImage(client pb.OrderInfoServiceClient) {
 // 服务端每处理一个请求就返回一个 user_id
 func AddBatchUsers(client pb.OrderInfoServiceClient) {
 	var users = []*pb.User{
-		&pb.User{UserId: proto.Int64(1), Name: proto.String("Tom"), OrderNum: proto.Int32(10), ConsumptionAmount: proto.Int32(1000)},
-		&pb.User{UserId: proto.Int64(2), Name: proto.String("Jack"), OrderNum: proto.Int32(9), ConsumptionAmount: proto.Int32(899)},
-		&pb.User{UserId: proto.Int64(3), Name: proto.String("Bob"), OrderNum: proto.Int32(6), ConsumptionAmount: proto.Int32(998)},
+		{UserId: proto.Int64(1), Name: proto.String("Tom"), OrderNum: proto.Int32(10), ConsumptionAmount: proto.Int32(1000)},
+		{UserId: proto.Int64(2), Name: proto.String("Jack"), OrderNum: proto.Int32(9), ConsumptionAmount: proto.Int32(899)},
+		{UserId: proto.Int64(3), Name: proto.String("Bob"), OrderNum: proto.Int32(6), ConsumptionAmount: proto.Int32(998)},
 	}
 	stream, err := client.AddBatchUsers(context.Background())
 	if err != nil {
